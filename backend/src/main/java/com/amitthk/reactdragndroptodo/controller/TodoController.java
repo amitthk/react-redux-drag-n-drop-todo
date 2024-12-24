@@ -20,8 +20,14 @@ public class TodoController {
 
     @PostMapping
     public Todo createTodo(@RequestBody Todo todo) {
+        int maxOrder = todoRepository.findAll().stream()
+                .mapToInt(Todo::getPriorityOrder)
+                .max()
+                .orElse(0);
+        todo.setPriorityOrder(maxOrder + 1);
         return todoRepository.save(todo);
     }
+
 
     @PutMapping("/{id}")
     public Todo updateTodo(@PathVariable Long id, @RequestBody Todo todo) {
@@ -36,4 +42,16 @@ public class TodoController {
     public void deleteTodo(@PathVariable Long id) {
         todoRepository.deleteById(id);
     }
+
+    @PutMapping("/order")
+    public List<Todo> updateTodosOrder(@RequestBody List<Todo> todos) {
+        todos.forEach(todo -> {
+            todoRepository.findById(todo.getId()).ifPresent(existingTodo -> {
+                existingTodo.setPriorityOrder(todo.getPriorityOrder());
+                todoRepository.save(existingTodo);
+            });
+        });
+        return todoRepository.findAll();
+    }
+
 }

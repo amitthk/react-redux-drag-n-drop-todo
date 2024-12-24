@@ -1,6 +1,0 @@
-2024-12-24 18:32:42.444595+10:30 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TODO" not found (this database is empty); SQL statement:
-insert into todo (text,type,id) values (?,?,default) [42104-224]
-2024-12-24 18:32:44.325701+10:30 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TODO" not found (this database is empty); SQL statement:
-insert into todo (text,type,id) values (?,?,default) [42104-224]

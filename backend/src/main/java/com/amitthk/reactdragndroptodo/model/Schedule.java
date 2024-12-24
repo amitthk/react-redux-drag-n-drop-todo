@@ -2,7 +2,9 @@ package com.amitthk.reactdragndroptodo.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Schedule {
@@ -11,8 +13,14 @@ public class Schedule {
     private Long id;
     private String date;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Todo> todos = new ArrayList<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "schedule_todos",
+            joinColumns = @JoinColumn(name = "schedule_id"),
+            inverseJoinColumns = @JoinColumn(name = "todos_id")
+    )
+    private Set<Todo> todos = new HashSet<>();
+
 
     // Getters and setters
     public Long getId() {
@@ -31,11 +39,11 @@ public class Schedule {
         this.date = date;
     }
 
-    public List<Todo> getTodos() {
+    public Set<Todo> getTodos() {
         return todos;
     }
 
-    public void setTodos(List<Todo> todos) {
+    public void setTodos(Set<Todo> todos) {
         this.todos = todos;
     }
 }
