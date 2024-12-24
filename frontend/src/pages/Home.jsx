@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import TodoInput from '../components/TodoInput';
 import TodoListPanel from '../components/TodoListPanel';
@@ -15,7 +15,8 @@ import {
 const Home = () => {
   const todos = useSelector((state) => state.todos.todos);
   const schedules = useSelector((state) => state.schedules.schedules);
-  const selectedDate = useSelector((state) => state.todos.selectedDate);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
+
   const dispatch = useDispatch();
 
   const handleDragEnd = (result) => {
@@ -49,6 +50,12 @@ const Home = () => {
     }
   };
 
+  const handleDateChange = (newDate) => {
+    console.log('Selected date:', newDate);
+    setSelectedDate(newDate);
+  };
+
+
   return (
     <div className="container mt-5">
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -61,7 +68,7 @@ const Home = () => {
             <SchedulePanel />
           </div>
           <div className="col-md-4">
-            <CalendarPanel />
+            <CalendarPanel date={selectedDate} onDateChange={handleDateChange} />
           </div>
         </div>
       </DragDropContext>
