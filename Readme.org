@@ -1,0 +1,32 @@
+* Reactjs Drag & Drop accross components - with Redux and spring boot backend
+
+Quite often as developer we are asked to implement the functionality to drag an item from one panel in the screen and drop it on the same or other panel to take some action. But every time there is a gap of few days, I had to struggle with the libraries and had to remind myself. So I have written this article to help my future self and other developers who are asked to implement similar functionality in future.
+
+The project consist of one nodejs project called "frontend" which has react frontend. The backend is written in spring boot. 
+
+The frontend will look like below screenshot.
+
+[[file:screenshots/react_drag_n_drop.png]]
+
+The project consist of two directories the "frontend" contains the frontend code in reactjs. The frontend is written in reactjs and uses redux to manage the state. The "backend" is written in spring boot and uses in memory database to store the data.
+
+Here's how to run the project. Once you've cloned the project from github, you can run the below commands to start the project.
+
+Start the backend:
+Prerequisite: You need to have maven and java/jdk17 installed on your machine.
+
+#+BEGIN_SRC 
+cd backend
+mvn clean package
+mvn spring-boot:run
+#+END_SRC
+
+Start the frontend:
+
+Prerequisite: You need to have nodejs 18 or 16 with npm 8.19.x or higher installed on your machine.
+
+#+BEGIN_SRC 
+cd frontend
+npm install
+npm start
+#+END_SRC
