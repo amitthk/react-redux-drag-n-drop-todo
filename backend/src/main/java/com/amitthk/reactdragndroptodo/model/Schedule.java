@@ -1,26 +1,24 @@
 package com.amitthk.reactdragndroptodo.model;
-import jakarta.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
+@Table(name = "schedule", uniqueConstraints = @UniqueConstraint(columnNames = "date"))
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String date;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "schedule_todos",
-            joinColumns = @JoinColumn(name = "schedule_id"),
-            inverseJoinColumns = @JoinColumn(name = "todos_id")
-    )
-    private Set<Todo> todos = new HashSet<>();
-
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderOfExecution ASC") // Automatically order by `orderOfExecution`
+    @JsonManagedReference
+    private List<ScheduledTodo> scheduledTodos = new ArrayList<>();
 
     // Getters and setters
     public Long getId() {
@@ -39,11 +37,11 @@ public class Schedule {
         this.date = date;
     }
 
-    public Set<Todo> getTodos() {
-        return todos;
+    public List<ScheduledTodo> getScheduledTodos() {
+        return scheduledTodos;
     }
 
-    public void setTodos(Set<Todo> todos) {
-        this.todos = todos;
+    public void setScheduledTodos(List<ScheduledTodo> scheduledTodos) {
+        this.scheduledTodos = scheduledTodos;
     }
 }

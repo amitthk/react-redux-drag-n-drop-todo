@@ -16,6 +16,7 @@ public class Todo {
     private String type; // e.g., personal, work, etc.
     private Integer priorityOrder; // Order of priority
 
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -48,4 +49,5 @@ public class Todo {
     public void setPriorityOrder(Integer priorityOrder) {
         this.priorityOrder = priorityOrder;
     }
+
 }

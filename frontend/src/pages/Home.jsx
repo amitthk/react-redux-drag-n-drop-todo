@@ -9,16 +9,9 @@ import { fetchTodos, updateTodos } from '../reducers/todoSlice';
 import {
   fetchScheduleByDate,
   addTodoToSchedule,
-  reorderScheduleTodos,
   reorderTodosInSchedule,
 } from '../reducers/schedulerSlice';
-
-// Helper to format date as yyyy-MM-dd
-const formatDate = (date) => {
-  const parsedDate = new Date(date);
-  if (isNaN(parsedDate.getTime())) return null;
-  return parsedDate.toISOString().split('T')[0];
-};
+import { formatDate } from '../services/util';
 
 const Home = () => {
   const todos = useSelector((state) => state.todos.todos);
@@ -26,7 +19,6 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const dispatch = useDispatch();
 
-  // Fetch todos and schedule for the selected date
   useEffect(() => {
     if (selectedDate) {
       dispatch(fetchTodos());
@@ -56,23 +48,23 @@ const Home = () => {
     // Reorder within SchedulePanel
     if (source.droppableId === 'schedule-panel' && destination.droppableId === 'schedule-panel') {
       const currentSchedule =
-        schedules.find((schedule) => schedule.date === selectedDate)?.todos || [];
+        schedules.find((schedule) => schedule.date === selectedDate)?.scheduledTodos || [];
       const reorderedTodos = Array.from(currentSchedule);
       const [movedTodo] = reorderedTodos.splice(source.index, 1);
       reorderedTodos.splice(destination.index, 0, movedTodo);
 
-      dispatch(reorderTodosInSchedule({ date: selectedDate, reorderedTodos }));
+      // Update `orderOfExecution`
+      const updatedScheduledTodos = reorderedTodos.map((item, index) => ({
+        ...item,
+        orderOfExecution: index + 1,
+      }));
+
+      dispatch(reorderTodosInSchedule({ date: selectedDate, reorderedTodos: updatedScheduledTodos }));
     }
   };
 
   const handleDateChange = (newDate) => {
     const formattedDate = formatDate(newDate);
-    if (!formattedDate) {
-      console.error('Invalid date selected:', newDate);
-      return;
-    }
-
-    console.log('Selected date:', formattedDate);
     setSelectedDate(formattedDate);
     dispatch(fetchScheduleByDate(formattedDate));
   };
@@ -86,7 +78,7 @@ const Home = () => {
             <TodoListPanel />
           </div>
           <div className="col-md-4">
-            <SchedulePanel />
+            <SchedulePanel selectedDate={selectedDate} />
           </div>
           <div className="col-md-4">
             <CalendarPanel date={selectedDate} onDateChange={handleDateChange} />

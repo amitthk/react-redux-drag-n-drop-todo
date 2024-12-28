@@ -1,6 +1,7 @@
 import React from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useSelector } from 'react-redux';
+import { getTodoTypeColor, getPriorityColor } from '../services/util';
 
 const TodoListPanel = () => {
   const todos = useSelector((state) => state.todos.todos);
@@ -30,9 +31,32 @@ const TodoListPanel = () => {
                     style={{
                       ...provided.draggableProps.style,
                       margin: '0 0 8px 0',
+                      borderLeft: `4px solid ${getTodoTypeColor(todo.type)}`,
+                      padding: '10px',
                     }}
                   >
-                    {todo.text} <small className="text-muted">({todo.type || 'General'})</small>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <strong>{todo.text}</strong>
+                      <span
+                        style={{
+                          backgroundColor: getPriorityColor(todo.priorityOrder),
+                          borderRadius: '12px',
+                          padding: '2px 8px',
+                          color: '#fff',
+                          fontSize: '12px',
+                        }}
+                      >
+                        {todo.priorityOrder}
+                      </span>
+                    </div>
+                    <small
+                      className="text-muted"
+                      style={{
+                        color: getTodoTypeColor(todo.type),
+                      }}
+                    >
+                      {todo.type || 'General'}
+                    </small>
                   </div>
                 )}
               </Draggable>
