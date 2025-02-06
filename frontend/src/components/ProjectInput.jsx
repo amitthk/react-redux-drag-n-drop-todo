@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { createTodo } from '../reducers/todoSlice';
+import { createProject } from '../reducers/projectSlice';
 
-const TodoInput = () => {
+const ProjectInput = () => {
   const [input, setInput] = useState('');
-  const [type, setType] = useState('personal');
+  const [type, setType] = useState('development');
   const dispatch = useDispatch();
 
   const handleAdd = () => {
     if (input.trim()) {
-      dispatch(createTodo({ text: input, type }));
+      dispatch(createProject({ projectName: input, projectType: type }));
       setInput('');
     }
   };
@@ -19,14 +19,14 @@ const TodoInput = () => {
       <input
         type="text"
         className="form-control"
-        placeholder="Enter todo"
+        placeholder="Enter project name"
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
       <select className="form-select" value={type} onChange={(e) => setType(e.target.value)}>
-        <option value="personal">Personal</option>
-        <option value="office">Office</option>
-        <option value="learning">Learning</option>
+        <option value="development">Development</option>
+        <option value="marketing">Marketing</option>
+        <option value="finance">Finance</option>
       </select>
       <button className="btn btn-primary" onClick={handleAdd}>
         Add
@@ -35,4 +35,4 @@ const TodoInput = () => {
   );
 };
 
-export default TodoInput;
+export default ProjectInput;

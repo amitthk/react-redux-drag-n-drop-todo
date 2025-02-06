@@ -18,6 +18,10 @@ const Sidebar = () => {
           <i className="bi bi-house"></i>
           {!collapsed && <span className="ms-2">Home</span>}
         </Link>
+        <Link className="nav-link" to="/projects">
+          <i className="bi bi-book"></i>
+          {!collapsed && <span className="ms-2">My Projects</span>}
+        </Link>
         <Link className="nav-link" to="/schedules">
           <i className="bi bi-calendar-check"></i>
           {!collapsed && <span className="ms-2">My Schedules</span>}
