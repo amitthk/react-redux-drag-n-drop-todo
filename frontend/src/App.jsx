@@ -5,6 +5,9 @@ import Home from './pages/Home';
 import Schedules from './pages/Schedules';
 import Calendar from './pages/Calendar';
 import Projects from './pages/Project';
+import TodoLinks from './pages/TodoLinks';
+import ProjectLinks from './pages/ProjectLinks';
+import CSVUploads from './pages/CSVUpload';
 
 const App = () => {
   return (
@@ -15,6 +18,9 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/projects" element={<Projects />} />
+      <Route path="/todo-links" element={<TodoLinks />} />
+          <Route path="/project-links" element={<ProjectLinks />} />
+          <Route path="/csv-uploads" element={<CSVUploads />} />
       <Route path="/schedules" element={<Schedules />} />
       <Route path="/calendar" element={<Calendar />} />
     </Routes>

@@ -21,4 +21,13 @@ public class TodoProjectLink {
     @Id
     @Column(name = "project_id")
     private Long projectId;
+
+    private int displayOrder;
+    private int priority;
+    private String comments;
+
+    public TodoProjectLink(Long todoId, Long projectId) {
+        this.todoId = todoId;
+        this.projectId = projectId;
+    }
 }

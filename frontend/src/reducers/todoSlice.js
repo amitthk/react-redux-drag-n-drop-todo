@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiClient from '../services/apiClient';
 
 const API_BASE_URL = '/api/todos';
-const PROJECTS_API_URL = '/api/todos';
-const LINKS_API_URL = '/api/todos';
 
 // ✅ **Async Actions for Todos**
 export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
@@ -31,45 +29,26 @@ export const updateTodos = createAsyncThunk('todos/updateTodos', async (todos) =
   return response.data;
 });
 
-// ✅ **Async Actions for Projects**
-export const fetchProjects = createAsyncThunk('projects/fetchProjects', async () => {
-  const response = await apiClient.get(PROJECTS_API_URL);
-  return response.data;
+// ✅ **Fetch Projects Linked to a Todo**
+export const fetchLinkedProjects = createAsyncThunk('todos/fetchLinkedProjects', async (todoId) => {
+  const response = await apiClient.get(`${API_BASE_URL}/${todoId}/projects`);
+  return { todoId, projects: response.data };
 });
 
-export const createProject = createAsyncThunk('projects/createProject', async (project) => {
-  const response = await apiClient.post(PROJECTS_API_URL, project);
-  return response.data;
-});
-
-export const updateProject = createAsyncThunk('projects/updateProject', async ({ id, updates }) => {
-  const response = await apiClient.put(`${PROJECTS_API_URL}/${id}`, updates);
-  return response.data;
-});
-
-export const deleteProject = createAsyncThunk('projects/deleteProject', async (id) => {
-  await apiClient.delete(`${PROJECTS_API_URL}/${id}`);
-  return id;
-});
-
-// ✅ **Async Actions for Todo-Project Links**
-export const fetchTodoProjectLinks = createAsyncThunk('links/fetchTodoProjectLinks', async () => {
-  const response = await apiClient.get(LINKS_API_URL);
-  return response.data;
-});
-
+// ✅ **Link a Todo to a Project**
 export const linkTodoToProject = createAsyncThunk(
-  'links/linkTodoToProject',
+  'todos/linkTodoToProject',
   async ({ todoId, projectId }) => {
-    const response = await apiClient.post(`${LINKS_API_URL}/link`, { todoId, projectId });
-    return response.data;
+    await apiClient.post(`${API_BASE_URL}/link`, null, { params: { todoId, projectId } });
+    return { todoId, projectId };
   }
 );
 
+// ✅ **Unlink a Todo from a Project**
 export const unlinkTodoFromProject = createAsyncThunk(
-  'links/unlinkTodoFromProject',
+  'todos/unlinkTodoFromProject',
   async ({ todoId, projectId }) => {
-    await apiClient.delete(`${LINKS_API_URL}/unlink?todoId=${todoId}&projectId=${projectId}`);
+    await apiClient.delete(`${API_BASE_URL}/unlink`, { params: { todoId, projectId } });
     return { todoId, projectId };
   }
 );
@@ -77,8 +56,7 @@ export const unlinkTodoFromProject = createAsyncThunk(
 // ✅ **Initial State**
 const initialState = {
   todos: [],
-  projects: [],
-  todoProjectLinks: [],
+  linkedProjects: {}, // { todoId: [projects] }
   status: 'idle',
   error: null,
 };
@@ -95,16 +73,8 @@ const todoSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // 🔹 Fetch Todos
-      .addCase(fetchTodos.pending, (state) => {
-        state.status = 'loading';
-      })
       .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.status = 'succeeded';
         state.todos = action.payload;
-      })
-      .addCase(fetchTodos.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
       })
 
       // 🔹 Create Todo
@@ -126,55 +96,29 @@ const todoSlice = createSlice({
       })
 
       // 🔹 Update Todos Order
-      .addCase(updateTodos.pending, (state) => {
-        state.status = 'loading';
-      })
       .addCase(updateTodos.fulfilled, (state, action) => {
-        state.status = 'succeeded';
         state.todos = action.payload;
       })
-      .addCase(updateTodos.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
 
-      // 🔹 Fetch Projects
-      .addCase(fetchProjects.fulfilled, (state, action) => {
-        state.projects = action.payload;
-      })
-
-      // 🔹 Create Project
-      .addCase(createProject.fulfilled, (state, action) => {
-        state.projects.push(action.payload);
-      })
-
-      // 🔹 Update Project
-      .addCase(updateProject.fulfilled, (state, action) => {
-        const index = state.projects.findIndex((project) => project.id === action.payload.id);
-        if (index !== -1) {
-          state.projects[index] = action.payload;
-        }
-      })
-
-      // 🔹 Delete Project
-      .addCase(deleteProject.fulfilled, (state, action) => {
-        state.projects = state.projects.filter((project) => project.id !== action.payload);
-      })
-
-      // 🔹 Fetch Todo-Project Links
-      .addCase(fetchTodoProjectLinks.fulfilled, (state, action) => {
-        state.todoProjectLinks = action.payload;
+      // 🔹 Fetch Linked Projects for a Todo
+      .addCase(fetchLinkedProjects.fulfilled, (state, action) => {
+        state.linkedProjects[action.payload.todoId] = action.payload.projects;
       })
 
       // 🔹 Link Todo to Project
       .addCase(linkTodoToProject.fulfilled, (state, action) => {
-        state.todoProjectLinks.push(action.payload);
+        const { todoId, projectId } = action.payload;
+        if (!state.linkedProjects[todoId]) {
+          state.linkedProjects[todoId] = [];
+        }
+        state.linkedProjects[todoId].push({ id: projectId });
       })
 
       // 🔹 Unlink Todo from Project
       .addCase(unlinkTodoFromProject.fulfilled, (state, action) => {
-        state.todoProjectLinks = state.todoProjectLinks.filter(
-          (link) => !(link.todoId === action.payload.todoId && link.projectId === action.payload.projectId)
+        const { todoId, projectId } = action.payload;
+        state.linkedProjects[todoId] = state.linkedProjects[todoId].filter(
+          (project) => project.id !== projectId
         );
       });
   },

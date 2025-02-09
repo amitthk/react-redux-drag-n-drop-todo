@@ -22,13 +22,17 @@ const Sidebar = () => {
           <i className="bi bi-book"></i>
           {!collapsed && <span className="ms-2">My Projects</span>}
         </Link>
-        <Link className="nav-link" to="/schedules">
-          <i className="bi bi-calendar-check"></i>
-          {!collapsed && <span className="ms-2">My Schedules</span>}
+        <Link className="nav-link" to="/todo-links">
+          <i className="bi bi-list"></i>
+          {!collapsed && <span className="ms-2">Todo Links</span>}
         </Link>
-        <Link className="nav-link" to="/calendar">
-          <i className="bi bi-calendar"></i>
-          {!collapsed && <span className="ms-2">My Calendar</span>}
+        <Link className="nav-link" to="/project-links">
+          <i className="bi bi-book"></i>
+          {!collapsed && <span className="ms-2">Project Links</span>}
+        </Link>
+        <Link className="nav-link" to="/csv-uploads">
+          <i className="bi bi-file"></i>
+          {!collapsed && <span className="ms-2">CSV Uploads</span>}
         </Link>
       </nav>
     </div>
